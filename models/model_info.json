@@ -30,5 +30,74 @@
       "min_samples_leaf": 100
     }
   },
-  "sklearn_version": "1.9.0"
+  "sklearn_version": "1.9.0",
+  "linear_beach_wave.pkl": {
+    "features": [
+      "BeachWidth_m",
+      "beach_slope",
+      "shore_orientation_sin",
+      "shore_orientation_cos",
+      "winter_wave_power",
+      "wave_dir_sin",
+      "wave_dir_cos"
+    ]
+  },
+  "linear_beach_wave_roni.pkl": {
+    "features": [
+      "BeachWidth_m",
+      "beach_slope",
+      "shore_orientation_sin",
+      "shore_orientation_cos",
+      "winter_wave_power",
+      "wave_dir_sin",
+      "wave_dir_cos",
+      "RONI"
+    ]
+  },
+  "gam_beach_wave.pkl": {
+    "features": [
+      "BeachWidth_m",
+      "beach_slope",
+      "shore_orientation_sin",
+      "shore_orientation_cos",
+      "winter_wave_power",
+      "wave_dir_sin",
+      "wave_dir_cos"
+    ]
+  },
+  "gam_beach_wave_roni.pkl": {
+    "features": [
+      "BeachWidth_m",
+      "beach_slope",
+      "shore_orientation_sin",
+      "shore_orientation_cos",
+      "winter_wave_power",
+      "wave_dir_sin",
+      "wave_dir_cos",
+      "RONI"
+    ]
+  },
+  "rf_beach_wave.pkl": {
+    "features": [
+      "BeachWidth_m",
+      "beach_slope",
+      "shore_orientation_sin",
+      "shore_orientation_cos",
+      "winter_wave_power",
+      "wave_dir_sin",
+      "wave_dir_cos"
+    ]
+  },
+  "rf_beach_wave_roni.pkl": {
+    "features": [
+      "BeachWidth_m",
+      "beach_slope",
+      "shore_orientation_sin",
+      "shore_orientation_cos",
+      "winter_wave_power",
+      "wave_dir_sin",
+      "wave_dir_cos",
+      "RONI"
+    ]
+  }
 }
