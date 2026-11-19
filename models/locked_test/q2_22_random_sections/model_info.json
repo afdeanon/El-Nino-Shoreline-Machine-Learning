@@ -1,0 +1,118 @@
+{
+  "baseline_overall_average.pkl": {
+    "model": "Baseline: overall average",
+    "features": [
+      "RONI"
+    ]
+  },
+  "linear_beach.pkl": {
+    "model": "Linear: beach",
+    "features": [
+      "BeachWidth_m",
+      "beach_slope",
+      "shore_orientation_sin",
+      "shore_orientation_cos"
+    ]
+  },
+  "gam_beach.pkl": {
+    "model": "GAM: beach",
+    "features": [
+      "BeachWidth_m",
+      "beach_slope",
+      "shore_orientation_sin",
+      "shore_orientation_cos"
+    ]
+  },
+  "rf_beach.pkl": {
+    "model": "RF: beach",
+    "features": [
+      "BeachWidth_m",
+      "beach_slope",
+      "shore_orientation_sin",
+      "shore_orientation_cos"
+    ]
+  },
+  "gbt_beach.pkl": {
+    "model": "GBT: beach",
+    "features": [
+      "BeachWidth_m",
+      "beach_slope",
+      "shore_orientation_sin",
+      "shore_orientation_cos"
+    ]
+  },
+  "linear_beach_wave.pkl": {
+    "model": "Linear: beach + wave",
+    "features": [
+      "BeachWidth_m",
+      "beach_slope",
+      "shore_orientation_sin",
+      "shore_orientation_cos",
+      "winter_wave_power",
+      "wave_dir_sin",
+      "wave_dir_cos"
+    ]
+  },
+  "gam_beach_wave.pkl": {
+    "model": "GAM: beach + wave",
+    "features": [
+      "BeachWidth_m",
+      "beach_slope",
+      "shore_orientation_sin",
+      "shore_orientation_cos",
+      "winter_wave_power",
+      "wave_dir_sin",
+      "wave_dir_cos"
+    ]
+  },
+  "rf_beach_wave.pkl": {
+    "model": "RF: beach + wave",
+    "features": [
+      "BeachWidth_m",
+      "beach_slope",
+      "shore_orientation_sin",
+      "shore_orientation_cos",
+      "winter_wave_power",
+      "wave_dir_sin",
+      "wave_dir_cos"
+    ]
+  },
+  "gbt_beach_wave.pkl": {
+    "model": "GBT: beach + wave",
+    "features": [
+      "BeachWidth_m",
+      "beach_slope",
+      "shore_orientation_sin",
+      "shore_orientation_cos",
+      "winter_wave_power",
+      "wave_dir_sin",
+      "wave_dir_cos"
+    ]
+  },
+  "locked test set": "A: 22 random sections",
+  "locked sections": [
+    "usa_CA_0008",
+    "usa_CA_0009",
+    "usa_CA_0010",
+    "usa_CA_0014",
+    "usa_CA_0020",
+    "usa_CA_0049",
+    "usa_CA_0058",
+    "usa_CA_0062",
+    "usa_CA_0063",
+    "usa_CA_0064",
+    "usa_CA_0069",
+    "usa_CA_0076",
+    "usa_CA_0082",
+    "usa_CA_0089",
+    "usa_CA_0090",
+    "usa_CA_0094",
+    "usa_CA_0097",
+    "usa_CA_0098",
+    "usa_CA_0106",
+    "usa_CA_0109",
+    "usa_CA_0114",
+    "usa_CA_0126"
+  ],
+  "sklearn_version": "1.9.0"
+}
