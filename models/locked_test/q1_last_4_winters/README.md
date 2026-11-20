@@ -42,6 +42,9 @@ __main__.TransectAverage = TransectAverage
 __main__.TransectAveragePlus = TransectAveragePlus
 ```
 
+These 4 files also need **pyarrow** installed (pandas stored the transect names in pyarrow format).
+Streamlit installs pyarrow automatically. If you only see these 4 fail, run `pip install pyarrow`.
+
 All other `.pkl` files load normally.
 
 If you only need predictions (not live what-if), use `test_predictions.csv` — no loading needed.

@@ -1,0 +1,8 @@
+feature,GAM,GBT
+wave_dir_sin,0.061,0.053
+beach_slope,0.041,0.18
+winter_wave_power,0.018,-0.081
+wave_dir_cos,-0.008,-0.03
+BeachWidth_m,-0.01,0.037
+shore_orientation_cos,-0.012,0.038
+shore_orientation_sin,-0.016,0.001

@@ -20,71 +20,8 @@
       "shore_orientation_cos"
     ]
   },
-  "gam_beach.pkl": {
-    "model": "GAM: beach",
-    "features": [
-      "BeachWidth_m",
-      "beach_slope",
-      "shore_orientation_sin",
-      "shore_orientation_cos"
-    ]
-  },
-  "rf_beach.pkl": {
-    "model": "RF: beach",
-    "features": [
-      "BeachWidth_m",
-      "beach_slope",
-      "shore_orientation_sin",
-      "shore_orientation_cos"
-    ]
-  },
-  "gbt_beach.pkl": {
-    "model": "GBT: beach",
-    "features": [
-      "BeachWidth_m",
-      "beach_slope",
-      "shore_orientation_sin",
-      "shore_orientation_cos"
-    ]
-  },
   "linear_beach_wave.pkl": {
     "model": "Linear: beach + wave",
-    "features": [
-      "BeachWidth_m",
-      "beach_slope",
-      "shore_orientation_sin",
-      "shore_orientation_cos",
-      "winter_wave_power",
-      "wave_dir_sin",
-      "wave_dir_cos"
-    ]
-  },
-  "gam_beach_wave.pkl": {
-    "model": "GAM: beach + wave",
-    "features": [
-      "BeachWidth_m",
-      "beach_slope",
-      "shore_orientation_sin",
-      "shore_orientation_cos",
-      "winter_wave_power",
-      "wave_dir_sin",
-      "wave_dir_cos"
-    ]
-  },
-  "rf_beach_wave.pkl": {
-    "model": "RF: beach + wave",
-    "features": [
-      "BeachWidth_m",
-      "beach_slope",
-      "shore_orientation_sin",
-      "shore_orientation_cos",
-      "winter_wave_power",
-      "wave_dir_sin",
-      "wave_dir_cos"
-    ]
-  },
-  "gbt_beach_wave.pkl": {
-    "model": "GBT: beach + wave",
     "features": [
       "BeachWidth_m",
       "beach_slope",
@@ -108,6 +45,27 @@
       "RONI"
     ]
   },
+  "gam_beach.pkl": {
+    "model": "GAM: beach",
+    "features": [
+      "BeachWidth_m",
+      "beach_slope",
+      "shore_orientation_sin",
+      "shore_orientation_cos"
+    ]
+  },
+  "gam_beach_wave.pkl": {
+    "model": "GAM: beach + wave",
+    "features": [
+      "BeachWidth_m",
+      "beach_slope",
+      "shore_orientation_sin",
+      "shore_orientation_cos",
+      "winter_wave_power",
+      "wave_dir_sin",
+      "wave_dir_cos"
+    ]
+  },
   "gam_beach_wave_roni.pkl": {
     "model": "GAM: beach + wave + RONI",
     "features": [
@@ -121,6 +79,27 @@
       "RONI"
     ]
   },
+  "rf_beach.pkl": {
+    "model": "RF: beach",
+    "features": [
+      "BeachWidth_m",
+      "beach_slope",
+      "shore_orientation_sin",
+      "shore_orientation_cos"
+    ]
+  },
+  "rf_beach_wave.pkl": {
+    "model": "RF: beach + wave",
+    "features": [
+      "BeachWidth_m",
+      "beach_slope",
+      "shore_orientation_sin",
+      "shore_orientation_cos",
+      "winter_wave_power",
+      "wave_dir_sin",
+      "wave_dir_cos"
+    ]
+  },
   "rf_beach_wave_roni.pkl": {
     "model": "RF: beach + wave + RONI",
     "features": [
@@ -132,6 +111,27 @@
       "wave_dir_sin",
       "wave_dir_cos",
       "RONI"
+    ]
+  },
+  "gbt_beach.pkl": {
+    "model": "GBT: beach",
+    "features": [
+      "BeachWidth_m",
+      "beach_slope",
+      "shore_orientation_sin",
+      "shore_orientation_cos"
+    ]
+  },
+  "gbt_beach_wave.pkl": {
+    "model": "GBT: beach + wave",
+    "features": [
+      "BeachWidth_m",
+      "beach_slope",
+      "shore_orientation_sin",
+      "shore_orientation_cos",
+      "winter_wave_power",
+      "wave_dir_sin",
+      "wave_dir_cos"
     ]
   },
   "gbt_beach_wave_roni.pkl": {
