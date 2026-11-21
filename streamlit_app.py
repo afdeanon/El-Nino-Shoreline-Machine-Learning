@@ -64,6 +64,158 @@ def score_chart(results, score_col="Test R²", title=""):
     return fig
 
 
+def show_test1():
+    import numpy as np
+    import plotly.express as px
+
+    st.subheader("Test 1 · Temporal generalization")
+    st.caption(
+        "Models trained on earlier winters predict the final four held-out winters "
+        "at known transects. All seven views use the same saved locked-test predictions."
+    )
+    prediction_path = LOCKED / "q1_last_4_winters" / "test_predictions.csv"
+    if not prediction_path.exists():
+        st.warning("The saved predictions for the last four winters are missing.")
+        return
+
+    predictions = pd.read_csv(prediction_path)
+    actual = "shoreline_change_m"
+    model_names = load_locked_results("q1")["model"].unique()
+    models = [name for name in model_names if name in predictions.columns]
+    defaults = [name for name in [
+        "Baseline: transect average", "Transect average + linear RONI",
+        "GAM: beach + wave", "GBT: beach + wave",
+    ] if name in models]
+    selected = st.multiselect("Models for performance and ranking", models,
+                             default=defaults, key="t1_models")
+    metric = st.radio("Error metric", ["MAE (m)", "RMSE (m)"],
+                      horizontal=True, key="t1_metric")
+    long = predictions.melt(
+        id_vars=["transect_id", "section", "winter", "RONI", actual],
+        value_vars=models, var_name="Model", value_name="Predicted change (m)",
+    ).dropna(subset=[actual, "Predicted change (m)"])
+    long["Residual (m)"] = long["Predicted change (m)"] - long[actual]
+    long["Absolute error"] = long["Residual (m)"].abs()
+    long["Squared error"] = long["Residual (m)"] ** 2
+    scores = long.groupby(["winter", "Model"], as_index=False).agg(
+        mae=("Absolute error", "mean"), mse=("Squared error", "mean"),
+        RONI=("RONI", "first"), observations=(actual, "size"),
+    ).rename(columns={"mae": "MAE (m)"})
+    scores["RMSE (m)"] = np.sqrt(scores.pop("mse"))
+    winters = sorted(predictions["winter"].unique())
+    colors = {name: px.colors.qualitative.Dark24[i % 24] for i, name in enumerate(models)}
+
+    st.markdown("#### Model performance by winter")
+    chosen_scores = scores[scores["Model"].isin(selected)]
+    if selected:
+        fig = px.line(chosen_scores.sort_values("winter"), x="winter", y=metric,
+                      color="Model", markers=True, color_discrete_map=colors,
+                      hover_data=["observations", "RONI"])
+        fig.update_xaxes(type="category", categoryorder="array", categoryarray=winters)
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        st.info("Select models above to display performance and the ranking heatmap.")
+    st.caption("Lower error is better. Each point summarizes all evaluated transects in one winter.")
+
+    diagnostic_model = st.selectbox("Model for prediction, residual, and map views", models,
+                                   index=models.index(defaults[0]) if defaults else 0,
+                                   key="t1_diagnostic_model")
+    diagnostic = long[long["Model"].eq(diagnostic_model)]
+    st.markdown("#### Actual versus predicted shoreline change")
+    fig = px.scatter(diagnostic, x=actual, y="Predicted change (m)", color="winter",
+                     opacity=0.3, hover_data=["transect_id"],
+                     labels={actual: "Observed shoreline change (m)", "winter": "Winter"})
+    low = float(diagnostic[[actual, "Predicted change (m)"]].min().min())
+    high = float(diagnostic[[actual, "Predicted change (m)"]].max().max())
+    fig.add_shape(type="line", x0=low, y0=low, x1=high, y1=high,
+                  line={"dash": "dash", "color": "gray"})
+    fig.update_xaxes(range=[low, high])
+    fig.update_yaxes(range=[low, high], scaleanchor="x", scaleratio=1)
+    fig.update_layout(height=550)
+    st.plotly_chart(fig, use_container_width=True)
+
+    st.markdown("#### Winter-level model ranking")
+    if selected:
+        matrix = chosen_scores.pivot(index="Model", columns="winter", values=metric)
+        order = chosen_scores.groupby("Model")[metric].mean().sort_values().index
+        matrix = matrix.reindex(index=order, columns=winters)
+        fig = px.imshow(matrix, text_auto=".2f", aspect="auto", color_continuous_scale="YlOrRd",
+                        labels={"x": "Winter", "y": "Model", "color": metric})
+        fig.update_layout(height=max(350, len(selected) * 42))
+        st.plotly_chart(fig, use_container_width=True)
+        st.caption("Lighter cells indicate lower error. Rows are ordered by mean winter error.")
+
+    st.markdown("#### RONI improvement by winter")
+    pairs = {
+        "Transect average + linear RONI": ("Baseline: transect average", "Transect average + linear RONI"),
+        "Transect average + GBT": ("Transect average + GBT beach + wave (control)", "Transect average + GBT beach + wave + RONI"),
+        "Linear": ("Linear: beach + wave", "Linear: beach + wave + RONI"),
+        "GAM": ("GAM: beach + wave", "GAM: beach + wave + RONI"),
+        "Random forest": ("RF: beach + wave", "RF: beach + wave + RONI"),
+        "Gradient-boosted trees": ("GBT: beach + wave", "GBT: beach + wave + RONI"),
+    }
+    pairs = {label: pair for label, pair in pairs.items() if all(name in models for name in pair)}
+    if pairs:
+        pair_name = st.selectbox("Matched RONI comparison", list(pairs), key="t1_pair")
+        without, with_roni = pairs[pair_name]
+        # Calculate both models on identical rows so improvements are comparable.
+        paired = predictions[["winter", "RONI", actual, without, with_roni]].dropna().copy()
+        for name in [without, with_roni]:
+            residual = paired[name] - paired[actual]
+            paired[name] = residual.abs() if metric == "MAE (m)" else residual ** 2
+        improvement = paired.groupby("winter", as_index=False).agg(
+            without=(without, "mean"), with_roni=(with_roni, "mean"), RONI=("RONI", "first"))
+        if metric == "RMSE (m)":
+            improvement[["without", "with_roni"]] = np.sqrt(improvement[["without", "with_roni"]])
+        improvement["Improvement (m)"] = improvement["without"] - improvement["with_roni"]
+        fig = px.bar(improvement, x="winter", y="Improvement (m)",
+                     hover_data={"without": ":.2f", "with_roni": ":.2f", "RONI": True},
+                     labels={"without": f"Without RONI {metric}", "with_roni": f"With RONI {metric}"})
+        fig.add_hline(y=0, line_color="gray")
+        st.plotly_chart(fig, use_container_width=True)
+        st.caption(f"Positive values mean adding RONI reduced {metric} for the selected pair.")
+
+    st.markdown("#### Error distribution by winter")
+    fig = px.box(diagnostic, x="winter", y="Residual (m)", color="winter", points="outliers")
+    fig.add_hline(y=0, line_dash="dash", line_color="gray")
+    fig.update_layout(showlegend=False)
+    st.plotly_chart(fig, use_container_width=True)
+    st.caption("Residual = predicted − observed change. Positive values mean the predicted shoreline change is more seaward than observed.")
+
+    st.markdown("#### Strong-event analysis")
+    threshold = st.number_input("Strong-event highlight threshold · absolute RONI", min_value=0.1,
+                                value=1.5, step=0.1, key="t1_strong_threshold")
+    st.caption("The threshold is an exploratory highlight applied to the saved winter RONI values.")
+    event = scores[scores["Model"].eq(diagnostic_model)].copy()
+    event["Event"] = np.select([event["RONI"] >= threshold, event["RONI"] <= -threshold],
+                               ["Strong El Niño", "Strong La Niña"], default="Other winter")
+    fig = px.scatter(event, x="RONI", y=metric, color="Event", symbol="Event", text="winter",
+                     color_discrete_map={"Strong El Niño": "#d95f02", "Strong La Niña": "#2471a3", "Other winter": "#777777"})
+    fig.update_traces(marker_size=13, textposition="top center")
+    for boundary in [-threshold, threshold]:
+        fig.add_vline(x=boundary, line_dash="dash", line_color="gray")
+    st.plotly_chart(fig, use_container_width=True)
+    counts = event["Event"].value_counts()
+    st.caption(f"Available held-out winters: {len(event)}. Strong El Niño: {counts.get('Strong El Niño', 0)}. Strong La Niña: {counts.get('Strong La Niña', 0)}.")
+
+    st.markdown("#### Transect errors for a selected winter")
+    winter = st.selectbox("Map winter", winters, key="t1_map_winter")
+    map_data = diagnostic[diagnostic["winter"].eq(winter)].merge(
+        load_coordinates(), on="transect_id", how="left", validate="many_to_one")
+    missing = map_data[["Lat_AvShoreline_WGS84", "Lon_AvShoreline_WGS84"]].isna().any(axis=1)
+    st.caption(f"{len(map_data) - int(missing.sum()):,} transects mapped; {int(missing.sum()):,} lack coordinates.")
+    map_data = map_data.loc[~missing]
+    if not map_data.empty:
+        fig = px.scatter_geo(map_data, lat="Lat_AvShoreline_WGS84", lon="Lon_AvShoreline_WGS84",
+                             color="Residual (m)", color_continuous_scale="RdBu", color_continuous_midpoint=0,
+                             hover_name="transect_id", hover_data={actual: ":.2f", "Predicted change (m)": ":.2f", "Residual (m)": ":.2f"})
+        fig.update_traces(marker_size=5)
+        fig.update_geos(fitbounds="locations", visible=True, showland=True, landcolor="#eeeeee")
+        fig.update_layout(height=600, title=f"{winter} · {diagnostic_model}")
+        st.plotly_chart(fig, use_container_width=True)
+        st.caption("Colors near the scale midpoint indicate smaller signed errors. Opposite colors show opposite directions of prediction bias.")
+
+
 def apply_style():
     st.markdown(
         """
@@ -150,8 +302,7 @@ if page == "1. Overview & scorecard":
     st.info("Beach and wave features provide limited spatial generalization to coastline sections the model has never seen.")
 
 elif page == "2. Test 1 · Temporal prediction":
-    st.subheader("Test 1")
-    st.info("This section is reserved for your partner's work.")
+    show_test1()
 
 elif page == "3. Test 2 · Spatial prediction":
     st.subheader("Test 2 · Spatial prediction")
